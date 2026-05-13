@@ -136,12 +136,49 @@
 
   </div>
 
-  <script>
-    let love = Number(localStorage.getItem("heartGaugeValue")) || 0;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    updateGauge();
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZW0IlUvq6cg5SGMNJ2iaCkaxHEwIHrxg",
+      authDomain: "heart-gauge.firebaseapp.com",
+      databaseURL: https://heart-gauge-default-rtdb.asia-southeast1.firebasedatabase.app,
+      projectId: "heart-gauge",
+      storageBucket: "heart-gauge.firebasestorage.app",
+      messagingSenderId: "1013386425282",
+      appId: "1:1013386425282:web:34dee057dbbb61c9a4dc5b"
+    };
 
-    function changeLove(value){
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const heartRef = ref(database, "heartGauge/value");
+
+    let love = 0;
+    let hasCelebrated = false;
+
+    onValue(heartRef, function(snapshot){
+      const value = snapshot.val();
+
+      if(value === null){
+        set(heartRef, 0);
+        return;
+      }
+
+      love = value;
+      updateGauge();
+
+      if(love === 100 && !hasCelebrated){
+        hasCelebrated = true;
+        celebrate();
+      }
+
+      if(love < 100){
+        hasCelebrated = false;
+      }
+    });
+
+    window.changeLove = function(value){
       love += value;
 
       if(love < 0){
@@ -152,13 +189,7 @@
         love = 100;
       }
 
-      localStorage.setItem("heartGaugeValue", love);
-
-      updateGauge();
-
-      if(love === 100){
-        celebrate();
-      }
+      set(heartRef, love);
     }
 
     function updateGauge(){
