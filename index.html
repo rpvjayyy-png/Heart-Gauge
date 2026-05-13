@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Gauge</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+      font-family:Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    .container{
+      width:340px;
+      background:white;
+      padding:30px;
+      border-radius:25px;
+      text-align:center;
+      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      position:relative;
+      z-index:10;
+    }
+
+    h1{
+      color:#ff0055;
+      margin-bottom:20px;
+    }
+
+    .meter{
+      width:100%;
+      height:35px;
+      background:#eee;
+      border-radius:50px;
+      overflow:hidden;
+      margin-bottom:20px;
+    }
+
+    .fill{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg,#ff4d6d,#ff006e);
+      transition:0.3s ease;
+    }
+
+    .percent{
+      font-size:40px;
+      font-weight:bold;
+      color:#ff006e;
+      margin-bottom:20px;
+    }
+
+    .buttons{
+      display:flex;
+      justify-content:center;
+      gap:15px;
+    }
+
+    button{
+      width:60px;
+      height:60px;
+      border:none;
+      border-radius:50%;
+      font-size:28px;
+      cursor:pointer;
+      background:#ff4d6d;
+      color:white;
+      transition:0.2s;
+    }
+
+    button:hover{
+      transform:scale(1.1);
+      background:#e6004c;
+    }
+
+    .message{
+      margin-top:20px;
+      font-size:24px;
+      font-weight:bold;
+      color:#ff006e;
+      display:none;
+    }
+
+    .heart{
+      position:absolute;
+      font-size:30px;
+      animation:floatUp 3s linear forwards;
+      pointer-events:none;
+    }
+
+    @keyframes floatUp{
+      0%{
+        transform:translateY(0) scale(1);
+        opacity:1;
+      }
+
+      100%{
+        transform:translateY(-500px) scale(2);
+        opacity:0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>❤️ Heart Gauge ❤️</h1>
+
+    <div class="meter">
+      <div class="fill" id="fill"></div>
+    </div>
+
+    <div class="percent" id="percent">0%</div>
+
+    <div class="buttons">
+      <button onclick="changeLove(-1)">−</button>
+      <button onclick="changeLove(1)">+</button>
+    </div>
+
+    <div class="message" id="message">
+      💖 HEART GAUGE FULL 💖
+    </div>
+
+  </div>
+
+  <script>
+    let love = Number(localStorage.getItem("heartGaugeValue")) || 0;
+
+    updateGauge();
+
+    function changeLove(value){
+      love += value;
+
+      if(love < 0){
+        love = 0;
+      }
+
+      if(love > 100){
+        love = 100;
+      }
+
+      localStorage.setItem("heartGaugeValue", love);
+
+      updateGauge();
+
+      if(love === 100){
+        celebrate();
+      }
+    }
+
+    function updateGauge(){
+      document.getElementById("fill").style.width = love + "%";
+      document.getElementById("percent").innerText = love + "%";
+
+      if(love === 100){
+        document.getElementById("message").style.display = "block";
+      } else {
+        document.getElementById("message").style.display = "none";
+      }
+    }
+
+    function celebrate(){
+      for(let i = 0; i < 40; i++){
+        const heart = document.createElement("div");
+
+        heart.classList.add("heart");
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = (window.innerHeight - 50) + "px";
+        heart.style.animationDuration = (2 + Math.random() * 2) + "s";
+
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 4000);
+      }
+    }
+  </script>
+
+</body>
+</html>
