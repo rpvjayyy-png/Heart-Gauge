@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heart Gauge</title>
 
   <style>
@@ -13,83 +13,197 @@
     }
 
     body{
-      height:100vh;
+      min-height:100vh;
       display:flex;
       justify-content:center;
       align-items:center;
-      background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+      background:linear-gradient(135deg,#ff9a9e,#fad0c4,#ffd1dc);
       font-family:Arial, sans-serif;
       overflow:hidden;
+      position:relative;
+    }
+
+    body::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.45), transparent 22%),
+        radial-gradient(circle at 80% 10%, rgba(255,255,255,0.35), transparent 18%),
+        radial-gradient(circle at 50% 90%, rgba(255,255,255,0.35), transparent 24%);
+      pointer-events:none;
     }
 
     .container{
-      width:340px;
-      background:white;
+      width:min(90vw, 360px);
+      background:rgba(255,255,255,0.95);
       padding:30px;
-      border-radius:25px;
+      border-radius:28px;
       text-align:center;
-      box-shadow:0 10px 30px rgba(0,0,0,0.2);
+      box-shadow:0 20px 60px rgba(255,0,110,0.25);
       position:relative;
       z-index:10;
+      border:2px solid rgba(255,255,255,0.8);
+    }
+
+    .container.full{
+      animation:heartbeat 0.8s ease-in-out infinite;
     }
 
     h1{
       color:#ff0055;
       margin-bottom:20px;
+      font-size:28px;
     }
 
     .meter{
       width:100%;
       height:35px;
-      background:#eee;
+      background:#ffe6ee;
       border-radius:50px;
       overflow:hidden;
       margin-bottom:20px;
+      border:2px solid #ffc2d1;
     }
 
     .fill{
       width:0%;
       height:100%;
-      background:linear-gradient(90deg,#ff4d6d,#ff006e);
-      transition:0.3s ease;
+      background:linear-gradient(90deg,#ff4d6d,#ff006e,#ff85a1);
+      transition:0.5s ease;
+    }
+
+    .fill.full{
+      animation:glow 1s ease-in-out infinite alternate;
     }
 
     .percent{
-      font-size:40px;
+      font-size:46px;
       font-weight:bold;
       color:#ff006e;
       margin-bottom:20px;
+      text-shadow:0 4px 14px rgba(255,0,110,0.22);
+    }
+
+
+
+    .goal-message{
+      margin:-8px 0 22px;
+      padding:14px 16px;
+      background:linear-gradient(135deg,#fff0f5,#ffe6ee);
+      border:2px dashed #ff85a1;
+      border-radius:20px;
+      color:#ff006e;
+      font-size:15px;
+      line-height:1.45;
+      font-weight:bold;
+      box-shadow:0 10px 24px rgba(255,0,110,0.12);
+      animation:pop 0.5s ease;
     }
 
     .buttons{
       display:flex;
       justify-content:center;
       gap:15px;
+      flex-wrap:wrap;
     }
 
     button{
-      width:60px;
+      min-width:64px;
       height:60px;
       border:none;
-      border-radius:50%;
-      font-size:28px;
+      border-radius:999px;
+      font-size:24px;
       cursor:pointer;
       background:#ff4d6d;
       color:white;
       transition:0.2s;
+      padding:0 16px;
+      font-weight:bold;
+      box-shadow:0 8px 18px rgba(255,0,110,0.25);
     }
 
     button:hover{
-      transform:scale(1.1);
+      transform:scale(1.08);
       background:#e6004c;
+    }
+
+    .replay-btn{
+      display:none;
+      font-size:16px;
+      width:auto;
+      margin-top:5px;
     }
 
     .message{
       margin-top:20px;
-      font-size:24px;
+      font-size:23px;
       font-weight:bold;
       color:#ff006e;
       display:none;
+      animation:pop 0.5s ease;
+    }
+
+    .celebration-overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      justify-content:center;
+      align-items:center;
+      background:rgba(255, 0, 85, 0.18);
+      backdrop-filter:blur(5px);
+      z-index:50;
+      text-align:center;
+      padding:20px;
+    }
+
+    .love-card{
+      max-width:450px;
+      background:white;
+      border-radius:34px;
+      padding:34px 28px;
+      box-shadow:0 24px 70px rgba(255,0,110,0.35);
+      animation:lovePop 0.8s ease;
+      border:3px solid #ffd1dc;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .love-card::before{
+      content:"💝";
+      position:absolute;
+      top:-18px;
+      right:-8px;
+      font-size:84px;
+      opacity:0.12;
+      transform:rotate(14deg);
+    }
+
+    .love-card h2{
+      color:#ff006e;
+      margin-bottom:15px;
+      font-size:30px;
+    }
+
+    .love-card p{
+      color:#444;
+      font-size:18px;
+      line-height:1.55;
+      margin-bottom:12px;
+    }
+
+    .love-card .signature{
+      color:#ff006e;
+      font-weight:bold;
+      font-size:20px;
+      margin-top:16px;
+    }
+
+    .close-btn{
+      margin-top:10px;
+      height:45px;
+      font-size:16px;
+      padding:0 22px;
     }
 
     .heart{
@@ -97,16 +211,101 @@
       font-size:30px;
       animation:floatUp 3s linear forwards;
       pointer-events:none;
+      z-index:60;
+    }
+
+    .sparkle{
+      position:absolute;
+      font-size:22px;
+      animation:sparkleFall 3s linear forwards;
+      pointer-events:none;
+      z-index:60;
+    }
+
+    .burst{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#ff006e;
+      animation:burst 1.3s ease-out forwards;
+      z-index:55;
+    }
+
+    @keyframes heartbeat{
+      0%,100%{
+        transform:scale(1);
+      }
+      50%{
+        transform:scale(1.035);
+      }
+    }
+
+    @keyframes glow{
+      from{
+        box-shadow:0 0 12px #ff4d6d;
+      }
+      to{
+        box-shadow:0 0 32px #ff006e;
+      }
+    }
+
+    @keyframes pop{
+      0%{
+        transform:scale(0.5);
+        opacity:0;
+      }
+      100%{
+        transform:scale(1);
+        opacity:1;
+      }
+    }
+
+    @keyframes lovePop{
+      0%{
+        transform:scale(0.35) rotate(-6deg);
+        opacity:0;
+      }
+      70%{
+        transform:scale(1.08) rotate(2deg);
+        opacity:1;
+      }
+      100%{
+        transform:scale(1) rotate(0);
+      }
     }
 
     @keyframes floatUp{
       0%{
-        transform:translateY(0) scale(1);
+        transform:translateY(0) scale(1) rotate(0deg);
         opacity:1;
       }
-
       100%{
-        transform:translateY(-500px) scale(2);
+        transform:translateY(-650px) scale(2.4) rotate(360deg);
+        opacity:0;
+      }
+    }
+
+    @keyframes sparkleFall{
+      0%{
+        transform:translateY(-50px) scale(1) rotate(0deg);
+        opacity:1;
+      }
+      100%{
+        transform:translateY(720px) scale(0.5) rotate(360deg);
+        opacity:0;
+      }
+    }
+
+    @keyframes burst{
+      0%{
+        transform:translate(-50%, -50%) scale(0);
+        opacity:0.9;
+      }
+      100%{
+        transform:translate(var(--x), var(--y)) scale(0.2);
         opacity:0;
       }
     }
@@ -115,7 +314,7 @@
 
 <body>
 
-  <div class="container">
+  <div class="container" id="container">
 
     <h1>❤️ Heart Gauge ❤️</h1>
 
@@ -125,9 +324,14 @@
 
     <div class="percent" id="percent">0%</div>
 
+    <div class="goal-message">
+      My goal is to reach 100% of your heart. I’ll flirt, annoy, and make you smile until I unlock the full version of you being mine. 😉
+    </div>
+
     <div class="buttons">
       <button onclick="changeLove(-1)">−</button>
       <button onclick="changeLove(1)">+</button>
+      <button class="replay-btn" id="replayBtn" onclick="replayCelebration()">Replay 💖</button>
     </div>
 
     <div class="message" id="message">
@@ -136,9 +340,33 @@
 
   </div>
 
+  <div class="celebration-overlay" id="celebrationOverlay">
+    <div class="love-card">
+      <h2>💖 100% Full of Love 💖</h2>
+
+      <p>
+        Yeyy, 100 na rin, how long I've waited for this moment 🥹.
+      </p>
+
+      <p>
+        You don't know how happy I am Alliah, my future. Everything about you, I love your eyes, your sweetness, your smile, and the way you make my heart race. I'm so in love with you.
+      </p>
+
+      <p>
+        I will make you happy each day, everyday and forever with sweet little moments, extra love, and maybe a few reasons to blush. 😉
+      </p>
+
+      <p class="signature">
+        I love you, Alliah. This heart is full because of your trust in me — and even your love for me hehe, pwede naman mag-assume diba HAHAHA. I will not regret you for choosing me as your first guy in your life. I love you, Alliah 💕
+      </p>
+
+      <button class="close-btn" onclick="closeCelebration()">Close 💕</button>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCZW0IlUvq6cg5SGMNJ2iaCkaxHEwIHrxg",
@@ -156,6 +384,7 @@
 
     let love = 0;
     let hasCelebrated = false;
+    let overlayTimer = null;
 
     onValue(heartRef, function(snapshot){
       const value = snapshot.val();
@@ -165,7 +394,16 @@
         return;
       }
 
-      love = value;
+      love = Number(value);
+
+      if(love < 0){
+        love = 0;
+      }
+
+      if(love > 100){
+        love = 100;
+      }
+
       updateGauge();
 
       if(love === 100 && !hasCelebrated){
@@ -179,46 +417,127 @@
     });
 
     window.changeLove = function(value){
-      love += value;
+      runTransaction(heartRef, function(currentValue){
+        let newValue = Number(currentValue) || 0;
 
-      if(love < 0){
-        love = 0;
+        newValue += value;
+
+        if(newValue < 0){
+          newValue = 0;
+        }
+
+        if(newValue > 100){
+          newValue = 100;
+        }
+
+        return newValue;
+      });
+    }
+
+    window.replayCelebration = function(){
+      if(love === 100){
+        celebrate();
       }
+    }
 
-      if(love > 100){
-        love = 100;
+    window.closeCelebration = function(){
+      const overlay = document.getElementById("celebrationOverlay");
+      overlay.style.display = "none";
+
+      if(overlayTimer){
+        clearTimeout(overlayTimer);
       }
-
-      set(heartRef, love);
     }
 
     function updateGauge(){
-      document.getElementById("fill").style.width = love + "%";
-      document.getElementById("percent").innerText = love + "%";
+      const fill = document.getElementById("fill");
+      const percent = document.getElementById("percent");
+      const message = document.getElementById("message");
+      const container = document.getElementById("container");
+      const replayBtn = document.getElementById("replayBtn");
+
+      fill.style.width = love + "%";
+      percent.innerText = love + "%";
 
       if(love === 100){
-        document.getElementById("message").style.display = "block";
+        message.style.display = "block";
+        replayBtn.style.display = "inline-block";
+        fill.classList.add("full");
+        container.classList.add("full");
       } else {
-        document.getElementById("message").style.display = "none";
+        message.style.display = "none";
+        replayBtn.style.display = "none";
+        fill.classList.remove("full");
+        container.classList.remove("full");
+
+        document.getElementById("celebrationOverlay").style.display = "none";
       }
     }
 
     function celebrate(){
-      for(let i = 0; i < 40; i++){
+      const overlay = document.getElementById("celebrationOverlay");
+      overlay.style.display = "flex";
+
+      if(overlayTimer){
+        clearTimeout(overlayTimer);
+      }
+
+      for(let i = 0; i < 90; i++){
         const heart = document.createElement("div");
 
         heart.classList.add("heart");
-        heart.innerHTML = "💖";
+        heart.innerHTML = ["💖", "💕", "💗", "💓", "💞", "💘"][Math.floor(Math.random() * 6)];
         heart.style.left = Math.random() * window.innerWidth + "px";
-        heart.style.top = (window.innerHeight - 50) + "px";
-        heart.style.animationDuration = (2 + Math.random() * 2) + "s";
+        heart.style.top = window.innerHeight + "px";
+        heart.style.fontSize = (20 + Math.random() * 38) + "px";
+        heart.style.animationDuration = (2 + Math.random() * 3) + "s";
 
         document.body.appendChild(heart);
 
         setTimeout(() => {
           heart.remove();
-        }, 4000);
+        }, 5200);
       }
+
+      for(let i = 0; i < 55; i++){
+        const sparkle = document.createElement("div");
+
+        sparkle.classList.add("sparkle");
+        sparkle.innerHTML = ["✨", "🌟", "💫", "⭐"][Math.floor(Math.random() * 4)];
+        sparkle.style.left = Math.random() * window.innerWidth + "px";
+        sparkle.style.top = "-40px";
+        sparkle.style.fontSize = (14 + Math.random() * 24) + "px";
+        sparkle.style.animationDuration = (2 + Math.random() * 3) + "s";
+
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => {
+          sparkle.remove();
+        }, 5200);
+      }
+
+      for(let i = 0; i < 36; i++){
+        const burst = document.createElement("div");
+
+        burst.classList.add("burst");
+
+        const angle = (Math.PI * 2 * i) / 36;
+        const distance = 180 + Math.random() * 160;
+
+        burst.style.setProperty("--x", Math.cos(angle) * distance + "px");
+        burst.style.setProperty("--y", Math.sin(angle) * distance + "px");
+        burst.style.background = ["#ff006e", "#ff4d6d", "#ff85a1", "#ffd166"][Math.floor(Math.random() * 4)];
+
+        document.body.appendChild(burst);
+
+        setTimeout(() => {
+          burst.remove();
+        }, 1500);
+      }
+
+      overlayTimer = setTimeout(() => {
+        overlay.style.display = "none";
+      }, 10000);
     }
   </script>
 
